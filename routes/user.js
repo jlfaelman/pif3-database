@@ -6,10 +6,9 @@ require('dotenv').config();
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
     service: 'gmail',
-    secure: true, 
     auth: {
-        user: process.env.SENDER,
-        pass: process.env.PASSWORD
+        user: `payitforward.ad@gmail.com`,
+        pass: `payItForward32`
     }
 });
 function generateID() {
