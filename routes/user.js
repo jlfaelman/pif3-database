@@ -91,9 +91,22 @@ router.post("/register", async (req, res) => {
 router.get("/verify/:id", (req, res) => {
     try {
         const id = req.params.id;
-        const verifyUser = pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1;`, [id]);
-        res.status(200).json({
-            message: "User Verified Successfuly"
+        const verifyUser = pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1;`, [id]);  
+        let mailOptions = {
+            from: process.env.SENDER,
+            to: user.Email,
+            subject: 'Pay It Forward Account Verification',
+            html: `<div style="font-size: 35px;">Account Verified Successfully!</div><br><br><br> <p>Your Pay It Forward Account has been verified successfully!</p> `
+        };
+
+        transporter.sendMail(mailOptions, (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            else console.log('Email Sent');
+            res.status(200).json({
+                message: "User Verified Successfuly"
+            });
         });
         console.log("User Verified")
     } catch (e) {
