@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
     service: 'gmail',
+    secure: true, 
     auth: {
         user: process.env.SENDER,
         pass: process.env.PASSWORD
@@ -63,7 +64,7 @@ router.post("/register", async (req, res) => {
             message: "Register Success"
         });
         console.log("Register Success");
-        let link = `${process.env.DATABASE_URL}/user/verify?id=${id}`;
+        let link = `${process.env.URL}/user/verify?id=${id}`;
         let mailOptions = {
             from: process.env.SENDER,
             to: user.Email,
