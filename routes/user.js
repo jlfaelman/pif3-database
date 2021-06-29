@@ -3,13 +3,13 @@ const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
 
-require('dotenv').config()
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
     service: 'gmail',
+    secure: true, 
     auth: {
         user: process.env.SENDER,
-        pass:  process.env.PASSWORD
+        pass: process.env.PASSWORD
     }
 });
 function generateID() {
