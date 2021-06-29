@@ -94,7 +94,7 @@ router.get("/verify/:id", async(req, res) => {
         console.log(verifyUser);
         let mailOptions = {
             from: process.env.SENDER,
-            to: verifyUser.rows.User_Email,
+            to: verifyUser.rows[0].User_Email,
             subject: 'Pay It Forward Account Verification',
             html: `<div style="font-size: 35px;">Account Verified Successfully!</div><br><br><br> <p>Your Pay It Forward Account has been verified successfully!</p> `
         };
