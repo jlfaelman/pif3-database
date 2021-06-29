@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'smtp.gmail.com',
     secure: true, 
     auth: {
         user: process.env.SENDER,
