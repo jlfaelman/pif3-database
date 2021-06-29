@@ -63,7 +63,7 @@ router.post("/register", async (req, res) => {
             message: "Register Success"
         });
         console.log("Register Success");
-        let link = "http://localhost:3000/user/verify?id=" + id;
+        let link = `${process.env.DATABASE_URL}/user/verify?id=${id}`;
         let mailOptions = {
             from: process.env.SENDER,
             to: user.Email,
