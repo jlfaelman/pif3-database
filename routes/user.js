@@ -2,7 +2,7 @@ const express = require('express');
 const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
-
+require('dotenv').config();
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
     service: 'gmail',
