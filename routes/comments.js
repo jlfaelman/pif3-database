@@ -17,7 +17,7 @@ function generateID() {
 // get all
 router.get('/', async(req,res)=>{
     try {
-        const getComments = await pool.query('SELECT * FROM public."COMMENT_TABLE";');
+        const getComments = await pool.query('SELECT * FROM  "COMMENT_TABLE";');
         res.status(200).json({
             body:getComments.rows,
             message: "Get Message Success"
@@ -37,7 +37,7 @@ router.post('/add', async(req,res)=>{
         const comment = req.body;
         const date = today();
         const addComments = await pool.query(`
-        INSERT INTO public."COMMENT_TABLE" ("Comment_ID","User_ID","Fundraiser_ID","Donation_ID","Comment_Desc","Comment_User","created_At") VALUES ($1,$2,$3,$4,$5,$6,$7) `,[id,comment.user,comment.fundraiser,comment.donation,comment.description,comment.name,date]);
+        INSERT INTO  "COMMENT_TABLE" ("Comment_ID","User_ID","Fundraiser_ID","Donation_ID","Comment_Desc","Comment_User","created_At") VALUES ($1,$2,$3,$4,$5,$6,$7) `,[id,comment.user,comment.fundraiser,comment.donation,comment.description,comment.name,date]);
         res.status(200).json({
                 body:addComments.rows,
                 message: "Transaction Begin"

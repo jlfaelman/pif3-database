@@ -42,7 +42,7 @@ const upload = multer({
 // main
 router.get('/', async (req, res) => {
     try {
-        const getForward = await pool.query('SELECT * FROM public."FORWARD_INFO"');
+        const getForward = await pool.query('SELECT * FROM  "FORWARD_INFO"');
         res.status(200).json({
             body: getForward.rows,
             message: "Get Forward Success"
@@ -57,8 +57,8 @@ router.get('/', async (req, res) => {
 // page
 router.get('/page/:id', async (req, res) => {
     try {
-        const getForward = await pool.query('SELECT * FROM public."FORWARD_INFO" WHERE "Forward_ID" = $1', [req.params.id]);
-        const getUser = await pool.query('SELECT * FROM public."USER_INFO" WHERE "User_ID" =  $1', [getForward.rows[0].User_ID])
+        const getForward = await pool.query('SELECT * FROM  "FORWARD_INFO" WHERE "Forward_ID" = $1', [req.params.id]);
+        const getUser = await pool.query('SELECT * FROM  "USER_INFO" WHERE "User_ID" =  $1', [getForward.rows[0].User_ID])
         res.status(200).json({
             body:{
                 forward:getForward.rows,
@@ -84,7 +84,7 @@ router.post('/page/add',upload.single('image'),async(req,res)=>{
         const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
         const forward = req.body;
         console.log(forward)
-        const addforward = await pool.query('INSERT INTO public."FORWARD_INFO" ("Forward_ID","User_ID","Forward_Title","Forward_Desc","Forward_Status","Forward_Type","Forward_Image","created_At","Allow_Search","Allow_Donation") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true,true) RETURNING "Forward_ID";',
+        const addforward = await pool.query('INSERT INTO  "FORWARD_INFO" ("Forward_ID","User_ID","Forward_Title","Forward_Desc","Forward_Status","Forward_Type","Forward_Image","created_At","Allow_Search","Allow_Donation") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true,true) RETURNING "Forward_ID";',
             [
                 id,
                 forward.user,
@@ -116,7 +116,7 @@ router.post('/add/validation', upload.any('images'), async (req, res) => {
         images.forEach(async (image) => {
             const id = generateID();
             const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
-            const addValidation = await pool.query('INSERT INTO public."VALIDATION_INFO" ("Validation_ID","Fundraiser_ID","Validation_Image") VALUES ($1,$2,$3) ;',
+            const addValidation = await pool.query('INSERT INTO  "VALIDATION_INFO" ("Validation_ID","Fundraiser_ID","Validation_Image") VALUES ($1,$2,$3) ;',
                 [id, forward, imgURL]);
                 console.log("Files Uploaded");
         });
@@ -136,7 +136,7 @@ router.post('/add/goods',async(req,res)=>{
    try {
         const id = generateID();
         const goods = req.body;
-        const addGoods = await pool.query('INSERT INTO public."GOODS_INFO" ("Goods_ID","Forward_ID","Goods_Item","Goods_Quantity","Goods_Address","Goods_Received","is_Reached") VALUES ($1,$2,$3,$4,$5,0,false) ;',
+        const addGoods = await pool.query('INSERT INTO  "GOODS_INFO" ("Goods_ID","Forward_ID","Goods_Item","Goods_Quantity","Goods_Address","Goods_Received","is_Reached") VALUES ($1,$2,$3,$4,$5,0,false) ;',
         [id, goods.forward,goods.item,goods.quantity,goods.address]);
         res.status(200).json({
             body: addGoods.rows,
@@ -156,7 +156,7 @@ router.post('/add/goods',async(req,res)=>{
 router.get('/dashboard/:id',async(req,res)=>{
     try {
         const id = req.params.id;
-        const getDashboard = await pool.query(`SELECT * FROM public."FORWARD_INFO" WHERE "User_ID" = $1`,[id])
+        const getDashboard = await pool.query(`SELECT * FROM  "FORWARD_INFO" WHERE "User_ID" = $1`,[id])
         res.status(200).json({
             body:getDashboard.rows,
             message:"Get Dashboard Success"
@@ -173,8 +173,8 @@ router.get('/dashboard/:id',async(req,res)=>{
 router.get('/dashboard/page/:forward',async(req,res)=>{
     try {
         const forward = req.params.forward;
-        const getDashboard = await pool.query(`SELECT * FROM public."FORWARD_INFO" WHERE "Forward_ID" = $1`,[forward])
-        const getUser = await pool.query(`SELECT * FROM public."USER_INFO" WHERE "User_ID" = $1`,[getDashboard.rows[0].User_ID])
+        const getDashboard = await pool.query(`SELECT * FROM  "FORWARD_INFO" WHERE "Forward_ID" = $1`,[forward])
+        const getUser = await pool.query(`SELECT * FROM  "USER_INFO" WHERE "User_ID" = $1`,[getDashboard.rows[0].User_ID])
         res.status(200).json({
             body:{
                 dashboard:getDashboard.rows[0],
@@ -195,7 +195,7 @@ router.get('/dashboard/page/:forward',async(req,res)=>{
 router.get('/dashboard/page/goods/:forward',async(req,res)=>{
     try {
         const forward = req.params.forward;
-        const getSettings = await pool.query(`SELECT * FROM public."GOODS_INFO" WHERE "Forward_ID" = $1`,[forward])
+        const getSettings = await pool.query(`SELECT * FROM  "GOODS_INFO" WHERE "Forward_ID" = $1`,[forward])
         
         res.status(200).json({
             body:getSettings.rows,
@@ -214,7 +214,7 @@ router.get('/dashboard/page/goods/:forward',async(req,res)=>{
 router.get('/dashboard/page/validation/:forward',async(req,res)=>{
     try {
         const forward = req.params.forward;
-        const getValidation = await pool.query(`SELECT * FROM public."VALIDATION_INFO" WHERE "Fundraiser_ID" = $1`,[forward])
+        const getValidation = await pool.query(`SELECT * FROM  "VALIDATION_INFO" WHERE "Fundraiser_ID" = $1`,[forward])
         res.status(200).json({
             body:getValidation.rows,
             message:"Get Validation Success"
@@ -234,7 +234,7 @@ router.get('/update/:id',async(req,res)=>{
     try {
         const id = req.params.id
         const getUpdates = await pool.query(`
-        SELECT * FROM public."UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
+        SELECT * FROM  "UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
         ORDER BY "created_At" DESC
         `, [id]);
         res.status(200).json({
@@ -254,7 +254,7 @@ router.get("/search/:query", async (req, res) => {
     try {
         const q = req.params.query;
         const getProject = await pool.query(`
-        SELECT * FROM public."FORWARD_INFO"
+        SELECT * FROM  "FORWARD_INFO"
         WHERE to_tsvector("Forward_Title"  || ' ' || "Forward_Type") @@ to_tsquery($1) AND "Allow_Search" = true`, [q]);
         res.status(200).json({
             body: getProject.rows,

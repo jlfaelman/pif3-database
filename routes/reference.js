@@ -7,7 +7,7 @@ router.get('/',(async(req,res)=>{
     try {
 
         const reference = await pool.query(`
-        SELECT * FROM public."REF_PROJECT_TYPE" `);
+        SELECT * FROM  "REF_PROJECT_TYPE" `);
         res.status(200).json({
             body: reference.rows,
             message: "Get Reference Success"

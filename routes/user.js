@@ -19,7 +19,7 @@ function generateID() {
 // Get User
 // router.get("/get", async (req, res) => {
 //     try {
-//         const getUser = await pool.query('SELECT * FROM public."USER_INFO"');
+//         const getUser = await pool.query('SELECT * FROM  "USER_INFO"');
 //         res.status(200).json(getUser.rows);
 //         console.log("Get Request Success");
 //     } catch (e) {
@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
             });
         }
         else {
-            const getUser = await pool.query(`SELECT * FROM public."USER_INFO" WHERE "User_Email" = $1 AND "User_Password" = $2`, [user.Email, user.Pass]);
+            const getUser = await pool.query(`SELECT * FROM  "USER_INFO" WHERE "User_Email" = $1 AND "User_Password" = $2`, [user.Email, user.Pass]);
             res.json({
                 body: getUser.rows,
                 message: "Login Success"
@@ -57,7 +57,7 @@ router.post("/register", async (req, res) => {
     try {
         const user = req.body;
         const id = generateID();
-        const addUser = await pool.query(`INSERT INTO public."USER_INFO" ("User_ID","User_First","User_Last","User_Email","User_Password","Is_Verified") VALUES ($1,$2,$3,$4,$5,false) RETURNING "User_ID","User_Last","User_First";`, [id, user.First, user.Last, user.Email, user.Pass]);
+        const addUser = await pool.query(`INSERT INTO  "USER_INFO" ("User_ID","User_First","User_Last","User_Email","User_Password","Is_Verified") VALUES ($1,$2,$3,$4,$5,false) RETURNING "User_ID","User_Last","User_First";`, [id, user.First, user.Last, user.Email, user.Pass]);
         res.json({
             body: addUser.rows,
             message: "Register Success"
@@ -90,7 +90,7 @@ router.post("/register", async (req, res) => {
 router.get("/verify/:id", (req, res) => {
     try {
         const id = req.params.id;
-        const verifyUser = pool.query(`UPDATE public."USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1 `, [id]);
+        const verifyUser = pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1;`, [id]);
         res.status(200).json({
             message: "User Verified Successfuly"
         });

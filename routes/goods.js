@@ -18,12 +18,12 @@ function generateID() {
 router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const getGoods = await pool.query('SELECT * FROM public."GOODS_INFO" WHERE "Fundraiser_ID" = $1', [id])
+        const getGoods = await pool.query('SELECT * FROM  "GOODS_INFO" WHERE "Fundraiser_ID" = $1', [id])
         const getFundraising = await pool.query(`
-        SELECT * FROM public."FUNDRAISER_INFO" WHERE "Fundraiser_ID" = $1`, [id]);
+        SELECT * FROM  "FUNDRAISER_INFO" WHERE "Fundraiser_ID" = $1`, [id]);
 
         const getUser = await pool.query(`
-        SELECT * FROM public."USER_INFO" WHERE "User_ID" = $1`, [getFundraising.rows[0].User_ID]);
+        SELECT * FROM  "USER_INFO" WHERE "User_ID" = $1`, [getFundraising.rows[0].User_ID]);
 
 
         res.status(200).json({
@@ -49,7 +49,7 @@ router.post('/add', async (req, res) => {
         const id = generateID();
         const goods = req.body;
         const addGoods = await pool.query(`
-        INSERT INTO public."GOODS_INFO" ("Goods_ID","Fundraiser_ID","Goods_Item","Goods_Quantity","Goods_Address","Goods_Received","is_Reached") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;`
+        INSERT INTO  "GOODS_INFO" ("Goods_ID","Fundraiser_ID","Goods_Item","Goods_Quantity","Goods_Address","Goods_Received","is_Reached") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *;`
             , [id, goods.fundraiser, goods.item, goods.quantity, goods.address, '0', false]);
         res.status(200).json({
             body: addGoods.rows,

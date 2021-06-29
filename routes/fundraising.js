@@ -45,7 +45,7 @@ const upload = multer({
 //Get All Projects
 router.get("/", async (req, res) => {
     try {
-        const getProject = await pool.query('SELECT * FROM public."FUNDRAISER_INFO"');
+        const getProject = await pool.query('SELECT * FROM  "FUNDRAISER_INFO"');
         res.status(200).json({
             body: getProject.rows,
             message: "Get Project Success"
@@ -64,16 +64,16 @@ router.get("/", async (req, res) => {
 router.get("/page/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const getFundraiser = await pool.query('SELECT * FROM public."FUNDRAISER_INFO" WHERE "Fundraiser_ID" =  $1', [id]);
-        const getFunding = await pool.query('SELECT * FROM public."FUNDING_INFO" WHERE "Fundraiser_ID" =  $1', [id]);
+        const getFundraiser = await pool.query('SELECT * FROM  "FUNDRAISER_INFO" WHERE "Fundraiser_ID" =  $1', [id]);
+        const getFunding = await pool.query('SELECT * FROM  "FUNDING_INFO" WHERE "Fundraiser_ID" =  $1', [id]);
         const getUpdate = await pool.query(`
-        SELECT * FROM public."UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
+        SELECT * FROM  "UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
         ORDER BY "created_At" DESC
         `, [id]);
-        const getUser = await pool.query('SELECT * FROM public."USER_INFO" WHERE "User_ID" =  $1', [getFundraiser.rows[0].User_ID])
+        const getUser = await pool.query('SELECT * FROM  "USER_INFO" WHERE "User_ID" =  $1', [getFundraiser.rows[0].User_ID])
         const getComment = await pool.query(`
-            SELECT * FROM public."COMMENT_TABLE" AS "comment"  
-            INNER JOIN  public."DONATION_INFO" AS "donation"
+            SELECT * FROM  "COMMENT_TABLE" AS "comment"  
+            INNER JOIN   "DONATION_INFO" AS "donation"
             ON "donation"."Donation_ID" = "comment"."Donation_ID"
             WHERE "comment"."Fundraiser_ID" = $1
         `, [id])
@@ -100,7 +100,7 @@ router.get('/history/:id', async (req, res) => {
         const id = req.params.id;
         const getDonation = await pool.query(`
         SELECT *
-        FROM public."DONATION_INFO"
+        FROM  "DONATION_INFO"
         WHERE "Fundraiser_ID" = $1
         ORDER BY "created_At" DESC 
         LIMIT 3
@@ -124,7 +124,7 @@ router.get('/history/:id', async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const getProject = await pool.query('SELECT * FROM public."FUNDRAISER_INFO"');
+        const getProject = await pool.query('SELECT * FROM  "FUNDRAISER_INFO"');
         res.status(200).json({
             body: getProject.rows,
             message: "Get Project Success"
@@ -141,7 +141,7 @@ router.get("/search/:query", async (req, res) => {
     try {
         const q = req.params.query;
         const getProject = await pool.query(`
-        SELECT * FROM public."FUNDRAISER_INFO"
+        SELECT * FROM  "FUNDRAISER_INFO"
         WHERE to_tsvector("Fundraiser_Title"  || ' ' || "Fundraiser_Type") @@ to_tsquery($1) AND "Allow_Search" = true`, [q]);
         res.status(200).json({
             body: getProject.rows,
@@ -161,7 +161,7 @@ router.get("/search/:query", async (req, res) => {
 router.get('/user/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const getProject = await pool.query(`SELECT * FROM public."FUNDRAISER_INFO" WHERE "User_ID" = $1`, [id]);
+        const getProject = await pool.query(`SELECT * FROM  "FUNDRAISER_INFO" WHERE "User_ID" = $1`, [id]);
         res.status(200).json({
             body: getProject.rows,
             message: "Get Project Success"
@@ -182,11 +182,11 @@ router.get('/user/settings/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const getFundraising = await pool.query(`
-        SELECT * FROM public."FUNDRAISER_INFO" WHERE "Fundraiser_ID" = $1`, [id]);
+        SELECT * FROM  "FUNDRAISER_INFO" WHERE "Fundraiser_ID" = $1`, [id]);
         const getFunding = await pool.query(`
-        SELECT * FROM public."FUNDING_INFO" WHERE "Fundraiser_ID" = $1 `, [id]);
+        SELECT * FROM  "FUNDING_INFO" WHERE "Fundraiser_ID" = $1 `, [id]);
         const getValidation = await pool.query(`
-        SELECT * FROM public."VALIDATION_INFO" WHERE "Fundraiser_ID" = $1 `, [id]);
+        SELECT * FROM  "VALIDATION_INFO" WHERE "Fundraiser_ID" = $1 `, [id]);
         res.status(200).json({
             body: {
                 fundraising: getFundraising.rows,
@@ -212,7 +212,7 @@ router.post('/add/fundraiser', upload.single('image'), async (req, res) => {
         const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
         const fundraiser = req.body;
         console.log(image);
-        const addFundraiser = await pool.query('INSERT INTO public."FUNDRAISER_INFO" ("Fundraiser_ID","User_ID","Fundraiser_Title","Fundraiser_Desc","Fundraiser_Status","Fundraiser_Type","created_At","Allow_Comments","Allow_Donation","Allow_Search","Fundraiser_Image") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "Fundraiser_ID";',
+        const addFundraiser = await pool.query('INSERT INTO  "FUNDRAISER_INFO" ("Fundraiser_ID","User_ID","Fundraiser_Title","Fundraiser_Desc","Fundraiser_Status","Fundraiser_Type","created_At","Allow_Comments","Allow_Donation","Allow_Search","Fundraiser_Image") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "Fundraiser_ID";',
             [id, fundraiser.user, fundraiser.title, fundraiser.description, "on process", fundraiser.type, date, true, true, true, imgURL]);
         res.status(200).json({
             body: addFundraiser.rows,
@@ -233,7 +233,7 @@ router.post('/edit', async (req, res) => {
         const title = req.body.title;
         const description = req.body.description
         const updateFundraiser = await pool.query(`
-        UPDATE public."FUNDRAISER_INFO"
+        UPDATE  "FUNDRAISER_INFO"
         SET "Fundraiser_Title" = $2,
         "Fundraiser_Desc" = $3
         WHERE "Fundraiser_ID"  = $1;
@@ -257,7 +257,7 @@ router.post('/add/method', async (req, res) => {
     try {
         const id = generateID();
         const funding = req.body;
-        const addFunding = await pool.query('INSERT INTO public."FUNDING_INFO" ("Funding_ID","Fundraiser_ID","Funding_Quota","Funding_Method","Funding_Date","Funding_Total","Funding_Received","is_Reached","paypal_Disabled") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *;',
+        const addFunding = await pool.query('INSERT INTO  "FUNDING_INFO" ("Funding_ID","Fundraiser_ID","Funding_Quota","Funding_Method","Funding_Date","Funding_Total","Funding_Received","is_Reached","paypal_Disabled") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *;',
             [id, funding.fundraiser, funding.quota, funding.method, funding.date, funding.total, "0", false, funding.paypal]);
         res.status(200).json({
             body: addFunding.rows,
@@ -280,7 +280,7 @@ router.post('/add/paymaya', upload.single('paymaya-qr'), async (req, res) => {
         const image = req.file;
         const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
         const paymaya = req.body
-        const addPaymaya = await pool.query('INSERT INTO public."PAYMAYA_TABLE" ("Paymaya_ID","Funding_ID","Paymaya_QR") VALUES ($1,$2,$3) ;',
+        const addPaymaya = await pool.query('INSERT INTO  "PAYMAYA_TABLE" ("Paymaya_ID","Funding_ID","Paymaya_QR") VALUES ($1,$2,$3) ;',
             [id, paymaya.funding, imgURL]);
         res.status(200).json({
             body: addPaymaya.rows,
@@ -301,7 +301,7 @@ router.post('/add/gcash', upload.single('gcash-qr'), async (req, res) => {
         const image = req.file;
         const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
         const gcash = req.body
-        const addGCash = await pool.query('INSERT INTO public."GCASH_TABLE" ("Gcash_ID","Funding_ID","Gcash_QR") VALUES ($1,$2,$3) ;',
+        const addGCash = await pool.query('INSERT INTO  "GCASH_TABLE" ("Gcash_ID","Funding_ID","Gcash_QR") VALUES ($1,$2,$3) ;',
             [id, gcash.funding, imgURL]);
         res.status(200).json({
             body: addGCash.rows,
@@ -324,7 +324,7 @@ router.post('/add/validation', upload.any('images'), async (req, res) => {
         images.forEach(async (image) => {
             const id = generateID();
             const imgURL = "http://localhost:5000/" + image.path.replace('public\\', '');
-            const addValidation = await pool.query('INSERT INTO public."VALIDATION_INFO" ("Validation_ID","Fundraiser_ID","Validation_Image") VALUES ($1,$2,$3) ;',
+            const addValidation = await pool.query('INSERT INTO  "VALIDATION_INFO" ("Validation_ID","Fundraiser_ID","Validation_Image") VALUES ($1,$2,$3) ;',
                 [id, fundraiser, imgURL]);
             // console.log(id + " " + imgURL + " " + fundraiser );
         });
@@ -343,8 +343,8 @@ router.post('/add/validation', upload.any('images'), async (req, res) => {
 router.get('/get/qr/:fund', async (req, res) => {
     try {
         const fund = req.params.fund;
-        const getPaymaya = await pool.query('SELECT * FROM public."PAYMAYA_TABLE" WHERE "Funding_ID" = $1;', [fund])
-        const getGCash = await pool.query('SELECT * FROM public."GCASH_TABLE" WHERE "Funding_ID" = $1;', [fund])
+        const getPaymaya = await pool.query('SELECT * FROM  "PAYMAYA_TABLE" WHERE "Funding_ID" = $1;', [fund])
+        const getGCash = await pool.query('SELECT * FROM  "GCASH_TABLE" WHERE "Funding_ID" = $1;', [fund])
         res.status(200).json({
             body: {
                 gcash: getGCash.rows,
@@ -368,7 +368,7 @@ router.post('/user/withdraw/:id', async (req, res) => {
         const id = req.params.id;
         const reset = "0"
         const updateFunding = await pool.query(`
-        UPDATE public."FUNDING_INFO"
+        UPDATE  "FUNDING_INFO"
         SET "Funding_Received" = $2
         WHERE "Funding_ID"  = $1;
         `, [id, reset])
@@ -387,7 +387,7 @@ router.post('/user/withdraw/:id', async (req, res) => {
 router.get('/get/funding/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const getFunding = await pool.query(`SELECT * FROM public."FUNDING_INFO" WHERE "Funding_ID" = $1`, [id]);
+        const getFunding = await pool.query(`SELECT * FROM  "FUNDING_INFO" WHERE "Funding_ID" = $1`, [id]);
         res.status(200).json({
             body: getFunding.rows[0],
             message: "Get Funding Success"
@@ -405,7 +405,7 @@ router.post('/update/funding/:id', async (req, res) => {
         const received = req.body.received;
         const total = req.body.total;
         const update = await pool.query(`
-        UPDATE public."FUNDING_INFO"
+        UPDATE  "FUNDING_INFO"
         SET "Funding_Received" = $2,
         "Funding_Total" = $3
         WHERE "Funding_ID"  = $1;`, [id, received, total]);

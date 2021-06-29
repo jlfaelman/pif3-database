@@ -17,7 +17,7 @@ function generateID() {
 // get all
 router.get('/', async (req, res) => {
     try {
-        const getUpdates = await pool.query('SELECT * FROM public."UPDATE_TABLE";');
+        const getUpdates = await pool.query('SELECT * FROM  "UPDATE_TABLE";');
         res.status(200).json({
             body: getUpdates.rows,
             message: "Get Update Success"
@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id
         const getUpdates = await pool.query(`
-        SELECT * FROM public."UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
+        SELECT * FROM  "UPDATE_TABLE" WHERE "Fundraiser_ID" = $1
         ORDER BY "created_At" DESC
         `, [id]);
         res.status(200).json({
@@ -53,7 +53,7 @@ router.get('/:id', async (req, res) => {
 // get 3
 router.get('/', async (req, res) => {
     try {
-        const getUpdates = await pool.query('SELECT * FROM public."UPDATE_TABLE";');
+        const getUpdates = await pool.query('SELECT * FROM  "UPDATE_TABLE";');
         res.status(200).json({
             body: getUpdates.rows,
             message: "Get Update Success"
@@ -72,7 +72,7 @@ router.post('/add', async (req, res) => {
         const id = generateID();
         const update = req.body;
         const date = today();
-        const addUpdate = await pool.query('INSERT INTO public."UPDATE_TABLE" ("Update_ID","Fundraiser_ID","Update_Desc","created_At") VALUES ($1,$2,$3,$4) RETURNING "Update_ID"', [id, update.fundraiser, update.description, date]);
+        const addUpdate = await pool.query('INSERT INTO  "UPDATE_TABLE" ("Update_ID","Fundraiser_ID","Update_Desc","created_At") VALUES ($1,$2,$3,$4) RETURNING "Update_ID"', [id, update.fundraiser, update.description, date]);
         res.status(200).json({
             body: addUpdate.rows,
             message: "Add Update Success"

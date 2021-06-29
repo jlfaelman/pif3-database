@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
     try {
         
         const id = req.params.id;
-        const getDonation = await pool.query('SELECT * FROM public."DONATION_INFO" WHERE "Donation_ID" = $1', [id]);
+        const getDonation = await pool.query('SELECT * FROM  "DONATION_INFO" WHERE "Donation_ID" = $1', [id]);
         res.status(200).json({
             body: getDonation.rows,
             message: "Get Donation Success"
@@ -42,7 +42,7 @@ router.get('/:id', async (req, res) => {
 });
 // router.get('/donate/:id',async(req,res)=>{
 //     try {
-//         const getDonation = await pool.query('SELECT * FROM public."DONATION_INFO WHERE Fundraising_ID = $1"',[]);
+//         const getDonation = await pool.query('SELECT * FROM  "DONATION_INFO WHERE Fundraising_ID = $1"',[]);
 //         res.status(200).json({
 //             body: getDonationz.rows,
 //             message: "Get Project Success"
@@ -66,8 +66,8 @@ router.post("/donate", async (req, res) => {
         const anonymous = req.body.anonymous;
         const date = today();
         const addDonation = await pool.query(`
-        INSERT INTO public."DONATION_INFO" ("Donation_ID","Funding_ID","Fundraiser_ID","User_ID","Donation_Type","Donation_Amount","is_Anonymous","created_At") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "Donation_ID";`, [id, fund, fundraiser, user, type, amount, anonymous, date]);
-        const getUser = await pool.query(`SELECT * FROM public."USER_INFO" WHERE "User_ID" = $1 `, [user]);
+        INSERT INTO  "DONATION_INFO" ("Donation_ID","Funding_ID","Fundraiser_ID","User_ID","Donation_Type","Donation_Amount","is_Anonymous","created_At") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "Donation_ID";`, [id, fund, fundraiser, user, type, amount, anonymous, date]);
+        const getUser = await pool.query(`SELECT * FROM  "USER_INFO" WHERE "User_ID" = $1 `, [user]);
         res.status(200).json({
             body: addDonation.rows,
             message: "Donation Success"
