@@ -104,9 +104,10 @@ router.get("/verify/:id", async(req, res) => {
                 console.log(err);
             }
             else console.log('Email Sent');
-            res.status(200).json({
-                message: "User Verified Successfuly"
-            });
+            
+        });
+        res.status(200).json({
+            message: "User Verified Successfuly"
         });
         console.log("User Verified")
     } catch (e) {
