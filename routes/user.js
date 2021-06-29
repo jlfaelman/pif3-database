@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.SENDER,
-        pass: process.env.PASSWORD
+        pass: 'payItForward32'
     }
 });
 function generateID() {
