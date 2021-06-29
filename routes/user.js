@@ -6,7 +6,6 @@ const nodemailer = require('nodemailer');
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
     service: 'gmail',
-    secure: true, 
     auth: {
         user: process.env.SENDER,
         pass: process.env.PASSWORD
