@@ -91,6 +91,7 @@ router.get("/verify/:id", (req, res) => {
     try {
         const id = req.params.id;
         const verifyUser = pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1 RETURNING "User_Email";`, [id]);  
+        console.log(verifyUser);
         let mailOptions = {
             from: process.env.SENDER,
             to: verifyUser.rows.User_Email,
