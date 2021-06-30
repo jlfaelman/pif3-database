@@ -106,6 +106,7 @@ router.get("/verify/:id", async (req, res) => {
             service: 'gmail',
             auth: {
                 type: 'OAuth2',
+                user: process.env.SENDER,
                 clientId: process.env.CLIENT_ID,
                 clientSecret: process.env.CLIENT_SECRET,
                 refreshToken: process.env.REFRESH_TOKEN,
@@ -114,7 +115,6 @@ router.get("/verify/:id", async (req, res) => {
         });
         const id = req.params.id;
         const verifyUser = await pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1 RETURNING "User_Email";`, [id]);
-        console.log(verifyUser);
         let mailOptions = {
             from: process.env.SENDER,
             to: verifyUser.rows[0].User_Email,
