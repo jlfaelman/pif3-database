@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const oAuth = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 
 // Transporter for Gmail API
 let transporter = nodemailer.createTransport({
@@ -26,7 +27,7 @@ function generateID() {
 
 router.get('/:id', async (req, res) => {
     try {
-        
+
         const id = req.params.id;
         const getDonation = await pool.query('SELECT * FROM  "DONATION_INFO" WHERE "Donation_ID" = $1', [id]);
         res.status(200).json({
@@ -57,6 +58,18 @@ router.get('/:id', async (req, res) => {
 
 router.post("/donate", async (req, res) => {
     try {
+        oAuth.setCredentials({ refresh_token: process.env.REFRESH_TOKEN })
+        const accessToken = await oAuth.getAccessToken();
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            }
+        });
         const id = generateID();
         const fundraiser = req.body.fundraiser;
         const fund = req.body.fund;

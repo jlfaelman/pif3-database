@@ -2,23 +2,12 @@ const express = require('express');
 const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const { google } = require('googleapis'); 
+const { google } = require('googleapis');
 require('dotenv').config();
 // Transporter for Gmail API
 
-const oAuth = new google.auth.OAuth2(process.env.CLIENT_ID,process.env.CLIENT_SECRET,process.env.REDIRECT_URI)
-oAuth.setCredentials({refresh_token:process.env.REFRESH_TOKEN})
-const accessToken = await oAuth.getAccessToken();
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        type: 'OAuth2',
-        clientId: process.env.CLIENT_ID,
-        clientSecret:process.env.CLIENT_SECRET,
-        refreshToken:process.env.REFRESH_TOKEN,
-        accessToken:accessToken
-    }
-});
+const oAuth = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
+
 function generateID() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
@@ -63,8 +52,21 @@ router.post("/login", async (req, res) => {
 // Register User
 router.post("/register", async (req, res) => {
     try {
+
         const user = req.body;
         const id = generateID();
+        oAuth.setCredentials({ refresh_token: process.env.REFRESH_TOKEN })
+        const accessToken = await oAuth.getAccessToken();
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            }
+        });
         const addUser = await pool.query(`INSERT INTO  "USER_INFO" ("User_ID","User_First","User_Last","User_Email","User_Password","Is_Verified") VALUES ($1,$2,$3,$4,$5,false) RETURNING "User_ID","User_Last","User_First";`, [id, user.First, user.Last, user.Email, user.Pass]);
         res.json({
             body: addUser.rows,
@@ -87,7 +89,7 @@ router.post("/register", async (req, res) => {
         });
 
 
-    } catch (e) {   
+    } catch (e) {
         console.log(e.message);
         res.status(500).json({
             error: e.message,
@@ -95,10 +97,22 @@ router.post("/register", async (req, res) => {
     }
 });
 
-router.get("/verify/:id", async(req, res) => {
+router.get("/verify/:id", async (req, res) => {
     try {
+        oAuth.setCredentials({ refresh_token: process.env.REFRESH_TOKEN })
+        const accessToken = await oAuth.getAccessToken();
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken
+            }
+        });
         const id = req.params.id;
-        const verifyUser = await pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1 RETURNING "User_Email";`, [id]);  
+        const verifyUser = await pool.query(`UPDATE  "USER_INFO" SET "Is_Verified" = true WHERE "User_ID"  = $1 RETURNING "User_Email";`, [id]);
         console.log(verifyUser);
         let mailOptions = {
             from: process.env.SENDER,
@@ -112,7 +126,7 @@ router.get("/verify/:id", async(req, res) => {
                 console.log(err);
             }
             else console.log('Email Sent');
-            
+
         });
         res.status(200).json({
             message: "User Verified Successfuly"
