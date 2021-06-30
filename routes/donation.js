@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 const oAuth = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 
 // Transporter for Gmail API
