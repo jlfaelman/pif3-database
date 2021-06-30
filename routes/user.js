@@ -2,13 +2,21 @@ const express = require('express');
 const pool = require("../conn");
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis'); 
 require('dotenv').config();
 // Transporter for Gmail API
+
+const oAuth = new google.auth.OAuth2(process.env.CLIENT_ID,process.env.CLIENT_SECRET,process.env.REDIRECT_URI)
+oAuth.setCredentials({refresh_token:process.env.REFRESH_TOKEN})
+const accessToken = await oAuth.getAccessToken();
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: `payitforward.ad@gmail.com`,
-        pass: `payItForward32`
+        type: 'OAuth2',
+        clientId: process.env.CLIENT_ID,
+        clientSecret:process.env.CLIENT_SECRET,
+        refreshToken:process.env.REFRESH_TOKEN,
+        accessToken:accessToken
     }
 });
 function generateID() {
